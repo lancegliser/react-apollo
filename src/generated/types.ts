@@ -4,6 +4,11 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions = {};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -107,19 +112,29 @@ export type UsersQueryGetByIdArgs = {
 
 export type SelfQueryVariables = Exact<{ [key: string]: never }>;
 
-export type SelfQuery = { __typename?: "Query" } & {
-  self?: Maybe<{ __typename?: "User" } & Pick<User, "id" | "displayName">>;
+export type SelfQuery = {
+  __typename?: "Query";
+  self?: Maybe<{
+    __typename?: "User";
+    id?: Maybe<string>;
+    displayName?: Maybe<string>;
+  }>;
 };
 
 export type UserByIdQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
 
-export type UserByIdQuery = { __typename?: "Query" } & {
-  users: { __typename?: "UsersQuery" } & {
-    getById?: Maybe<
-      { __typename?: "User" } & Pick<User, "id" | "displayName" | "email">
-    >;
+export type UserByIdQuery = {
+  __typename?: "Query";
+  users: {
+    __typename?: "UsersQuery";
+    getById?: Maybe<{
+      __typename?: "User";
+      id?: Maybe<string>;
+      displayName?: Maybe<string>;
+      email?: Maybe<string>;
+    }>;
   };
 };
 
@@ -127,11 +142,16 @@ export type SaveUserMutationVariables = Exact<{
   user: UserInput;
 }>;
 
-export type SaveUserMutation = { __typename?: "Mutation" } & {
-  users: { __typename?: "UsersMutations" } & {
-    saveUser?: Maybe<
-      { __typename?: "User" } & Pick<User, "id" | "displayName" | "email">
-    >;
+export type SaveUserMutation = {
+  __typename?: "Mutation";
+  users: {
+    __typename?: "UsersMutations";
+    saveUser?: Maybe<{
+      __typename?: "User";
+      id?: Maybe<string>;
+      displayName?: Maybe<string>;
+      email?: Maybe<string>;
+    }>;
   };
 };
 
@@ -162,17 +182,16 @@ export const SelfDocument = gql`
 export function useSelfQuery(
   baseOptions?: Apollo.QueryHookOptions<SelfQuery, SelfQueryVariables>
 ) {
-  return Apollo.useQuery<SelfQuery, SelfQueryVariables>(
-    SelfDocument,
-    baseOptions
-  );
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<SelfQuery, SelfQueryVariables>(SelfDocument, options);
 }
 export function useSelfLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<SelfQuery, SelfQueryVariables>
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<SelfQuery, SelfQueryVariables>(
     SelfDocument,
-    baseOptions
+    options
   );
 }
 export type SelfQueryHookResult = ReturnType<typeof useSelfQuery>;
@@ -207,11 +226,12 @@ export const UserByIdDocument = gql`
  * });
  */
 export function useUserByIdQuery(
-  baseOptions?: Apollo.QueryHookOptions<UserByIdQuery, UserByIdQueryVariables>
+  baseOptions: Apollo.QueryHookOptions<UserByIdQuery, UserByIdQueryVariables>
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<UserByIdQuery, UserByIdQueryVariables>(
     UserByIdDocument,
-    baseOptions
+    options
   );
 }
 export function useUserByIdLazyQuery(
@@ -220,9 +240,10 @@ export function useUserByIdLazyQuery(
     UserByIdQueryVariables
   >
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<UserByIdQuery, UserByIdQueryVariables>(
     UserByIdDocument,
-    baseOptions
+    options
   );
 }
 export type UserByIdQueryHookResult = ReturnType<typeof useUserByIdQuery>;
@@ -272,9 +293,10 @@ export function useSaveUserMutation(
     SaveUserMutationVariables
   >
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<SaveUserMutation, SaveUserMutationVariables>(
     SaveUserDocument,
-    baseOptions
+    options
   );
 }
 export type SaveUserMutationHookResult = ReturnType<typeof useSaveUserMutation>;
