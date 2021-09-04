@@ -9,7 +9,7 @@ import {
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: process.env.VUE_APP_GRAPHQL_URL || "http://localhost:5000/api/graphql",
+  uri: "http://localhost:5000/graphql",
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
