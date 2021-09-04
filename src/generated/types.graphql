@@ -1,0 +1,90 @@
+interface ICreated {
+  """ISO date time string for the time this resource was created"""
+  createdAt: String
+
+  """Unique identifier for users that created this resource"""
+  createdBy: ID
+}
+
+interface IDisplayName {
+  """A preformatted display name safe to display in HTML context"""
+  displayName: String
+}
+
+interface IUpdated {
+  """ISO date time string for the time this resource was created"""
+  updatedAt: String
+
+  """Unique identifier for users that created this resource"""
+  updatedBy: ID
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  """Provides name spaced users functionality"""
+  users: UsersMutations!
+}
+
+type Query {
+  """Returns the current user as defined by the authentication headers"""
+  self: User
+
+  """Provides name spaced users functionality"""
+  users: UsersQuery!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type User implements ICreated & IUpdated & IDisplayName {
+  """Unique identifier for the resource across all collections"""
+  id: ID
+
+  """ISO date time string for the time this resource was created"""
+  createdAt: String
+
+  """Unique identifier for users that created this resource"""
+  createdBy: ID
+
+  """ISO date time string for the time this resource was created"""
+  updatedAt: String
+
+  """Unique identifier for users that created this resource"""
+  updatedBy: ID
+
+  """A preformatted name safe to display in any HTML context"""
+  displayName: String
+
+  """Email addresses"""
+  email: String
+
+  """Determines if a users is a service account supporting applications"""
+  isServiceAccount: Boolean
+}
+
+input UserInput {
+  """Unique identifier for the resource across all collections"""
+  id: ID!
+
+  """A preformatted name safe to display in any HTML context"""
+  displayName: String
+
+  """Email addresses"""
+  email: String
+}
+
+"""Provides name spaced users functionality"""
+type UsersMutations {
+  """Saves the user and returns the updated copy"""
+  saveUser(user: UserInput!): User
+}
+
+"""Provides name spaced users functionality"""
+type UsersQuery {
+  """Returns the user record matching the provided id"""
+  getById(id: ID!): User
+}
