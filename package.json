@@ -1,6 +1,6 @@
 {
-  "name": "interview-react",
-  "version": "0.1.0",
+  "name": "react-apollo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "react-scripts build",
