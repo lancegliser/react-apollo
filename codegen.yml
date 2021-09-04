@@ -1,0 +1,14 @@
+overwrite: true
+generates:
+  # http://localhost:5000/graphiql
+  "src/generated/types.graphql":
+    schema: "http://localhost:5000/graphql"
+    plugins:
+      - "schema-ast"
+  "src/generated/types.ts":
+    schema: "http://localhost:5000/graphql"
+    documents: "src/**/!(*.d).{graphql,ts}"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
