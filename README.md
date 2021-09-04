@@ -14,6 +14,28 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `graphql-codegen`
+
+This UI works from a GraphQL client first approach.
+Update the `./codegen.yml` file to point at your API.
+Then create local `*.graphql` files in your `src` directory
+to build the calls you want for your project.
+The types in it will cause typescript code to be generated
+by running the following command:
+
+```
+npm run graphql-codegen
+```
+
+The generated classes are created at:
+
+```
+src/generated/types.ts
+```
+
+You can import those types in your own components,
+providing you Apollo client strongly typed hooks.
+
 ### `npm start`
 
 Runs the app in the development mode.<br />
