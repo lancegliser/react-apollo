@@ -27,6 +27,16 @@ const cache = new InMemoryCache({
         users: { merge: true },
       },
     },
+    // Stub functionality to allow pagination merging through the hook result's .fetchMore().
+    // Imagine users(limit: 10, offset: 0, ...) { id, displayName }
+    // UsersQuery: {
+    //   fields: {
+    //     users: {
+    //       keyArgs: ["id"],
+    //       ...offsetLimitItemsPaginationPolicy(),
+    //     },
+    //   },
+    // },
   },
 });
 
