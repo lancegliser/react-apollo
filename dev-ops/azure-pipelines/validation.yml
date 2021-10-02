@@ -1,0 +1,43 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+pool:
+  vmImage: ubuntu-latest
+
+trigger: none
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "14.x"
+    displayName: "Install Node.js"
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: "$(System.DefaultWorkingDirectory)/.npmrc"
+
+  - task: Npm@1
+    inputs:
+      command: "ci"
+      workingDir: "."
+    displayName: "npm ci"
+
+  - task: Npm@1
+    inputs:
+      command: "custom"
+      workingDir: "."
+      customCommand: "run-script lint"
+    displayName: "npm lint"
+
+  - task: HelmInstaller@1
+    inputs:
+      helmVersionToInstall: "latest"
+
+  - task: HelmDeploy@0
+    inputs:
+      connectionType: "None"
+      command: "lint"
+      arguments: "./dev-ops/helm/ui"
+    displayName: "helm lint"

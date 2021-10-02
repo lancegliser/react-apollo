@@ -1,0 +1,35 @@
+parameters:
+  - name: containerRegistryServiceConnection
+    type: string
+  - name: containerRepository
+    type: string
+  - name: environmentContainerTag
+    type: string
+
+steps:
+  # Get the docker file into the built folder
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "$(Pipeline.Workspace)/drop"
+      Contents: "Dockerfile"
+      TargetFolder: "$(Pipeline.Workspace)/drop/build"
+    displayName: "Copy Dockerfile"
+
+  # Get the nginx.conf file into the built folder
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "$(Pipeline.Workspace)/drop"
+      Contents: "nginx.conf"
+      TargetFolder: "$(Pipeline.Workspace)/drop/build"
+    displayName: "Copy nginx.conf"
+
+  # Have docker target the Docker file, which targets the build directory
+  - task: Docker@2
+    displayName: "Build and push to Docker"
+    inputs:
+      containerRegistry: ${{ parameters.containerRegistryServiceConnection }}
+      repository: ${{ parameters.containerRepository }}
+      command: buildAndPush
+      Dockerfile: "$(Pipeline.Workspace)/drop/build/Dockerfile"
+      tags: |
+        ${{ parameters.environmentContainerTag }}

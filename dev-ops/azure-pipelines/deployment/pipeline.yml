@@ -1,0 +1,133 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+variables:
+  vmImage: "ubuntu-latest"
+  releaseName: "ui"
+  # This magic string is a pointer at the service connection shared to the project
+  containerRegistryServiceConnection: ""
+  containerRepository: "registry-name/container-name"
+  containerTag: $(Build.BuildId)
+
+stages:
+  - stage: "Prepare"
+    displayName: "Prepare the base artifact"
+    jobs:
+      - job: "Prepare"
+        pool:
+          vmImage: $(vmImage)
+        displayName: "Prepare job"
+        #        variables:
+        steps:
+          - publish: $(System.DefaultWorkingDirectory)
+            artifact: drop
+
+  - stage: "Development"
+    displayName: "Deploy to the dev environment"
+    dependsOn: Prepare
+    condition: succeeded()
+    jobs:
+      - deployment: Deploy
+        pool:
+          vmImage: $(vmImage)
+          demands:
+            - npm
+        environment: "Development.clusterNamespace"
+        variables:
+          - name: hostName
+            value: "dev.example.com"
+            readonly: true
+          - name: environmentContainerTag
+            value: "$(containerTag)-$(Environment.Name)"
+            readonly: true
+        strategy:
+          runOnce:
+            preDeploy:
+              steps:
+                - template: "templates/pre-deploy.yml"
+            deploy:
+              steps:
+                # Not required for development
+                # - template: "templates/npm-audit.yml"
+                - template: "templates/npm-build.yml"
+                  parameters:
+                    reactAppClientId: "11111111-1111-1111-1111-111111111111"
+                    reactAppGraphQLUrl: "https://$(hostName)/api/graphql"
+                    reactAppBase: "https://$(hostName)"
+                - template: "templates/docker-build.yml"
+                  parameters:
+                    containerRegistryServiceConnection: $(containerRegistryServiceConnection)
+                    containerRepository: $(containerRepository)
+                    environmentContainerTag: $(environmentContainerTag)
+                - template: "templates/helm-upgrade.yml"
+                  parameters:
+                    namespace: $(Environment.ResourceName)
+                    releaseName: $(releaseName)
+                    environmentContainerTag: $(environmentContainerTag)
+  #  - stage: "Test"
+  #    displayName: "Deploy to the test environment"
+  #    dependsOn: Dev
+  #    #condition: eq(variables['Build.Reason'], 'Schedule')
+  #    jobs:
+  #      - deployment: Deploy
+  #        pool:
+  #          vmImage: "ubuntu-20.04"
+  #        environment: test
+  #        variables:
+  #          - group: "Release"
+  #        strategy:
+  #          runOnce:
+  #            deploy:
+  #              steps:
+  #                - download: current
+  #                  artifact: drop
+  #                - task: AzureWebApp@1
+  #                  displayName: "Azure App Service Deploy: website"
+  #                  inputs:
+  #                    azureSubscription: "Resource Manager - Tailspin - Space Game"
+  #                    appName: "$(WebAppNameTest)"
+  #                    package: "$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip"
+  - stage: "Demo"
+    displayName: "Deploy to the demo environment"
+    dependsOn: Development
+    condition: succeeded()
+    jobs:
+      - deployment: Deploy
+        pool:
+          vmImage: $(vmImage)
+          demands:
+            - npm
+        environment: "Production.clusterNamespace"
+        variables:
+          - name: hostName
+            value: "example.com"
+            readonly: true
+          - name: environmentContainerTag
+            value: "$(containerTag)-$(Environment.Name)"
+            readonly: true
+        strategy:
+          runOnce:
+            preDeploy:
+              steps:
+                - template: "templates/pre-deploy.yml"
+            deploy:
+              steps:
+                #                - template: "templates/npm-audit.yml"
+                - template: "templates/npm-build.yml"
+                  parameters:
+                    reactAppClientId: "11111111-1111-1111-1111-111111111112"
+                    reactAppGraphQLUrl: "https://$(hostName)/api/graphql"
+                    reactAppBase: "https://$(hostName)"
+                - template: "templates/docker-build.yml"
+                  parameters:
+                    containerRegistryServiceConnection: $(containerRegistryServiceConnection)
+                    containerRepository: $(containerRepository)
+                    environmentContainerTag: $(environmentContainerTag)
+                - template: "templates/helm-upgrade.yml"
+                  parameters:
+                    namespace: $(Environment.ResourceName)
+                    releaseName: $(releaseName)
+                    environmentContainerTag: $(environmentContainerTag)

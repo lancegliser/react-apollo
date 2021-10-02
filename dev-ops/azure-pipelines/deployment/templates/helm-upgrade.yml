@@ -1,0 +1,22 @@
+parameters:
+  - name: namespace
+    type: string
+  - name: releaseName
+    type: string
+  - name: environmentContainerTag
+    type: string
+
+steps:
+  # I ship it
+  - task: HelmDeploy@0
+    displayName: "helm upgrade"
+    inputs:
+      #              connectionType: "Kubernetes Service Connection"
+      #               value for kubernetesServiceConnection input automatically passed down to task by environment.resource input
+      namespace: ${{ parameters.namespace }} # The K8s namespace
+      command: upgrade
+      chartType: FilePath
+      chartPath: "$(Pipeline.Workspace)/drop/dev-ops/helm/ui"
+      releaseName: ${{ parameters.releaseName }}"
+      overrideValues: "image.tag=${{ parameters.environmentContainerTag }}"
+      waitForExecution: false

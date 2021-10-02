@@ -1,0 +1,40 @@
+parameters:
+  - name: reactAppClientId
+    type: string
+  - name: reactAppGraphQLUrl
+    type: string
+  - name: reactAppBase
+    type: string
+
+steps:
+  # Install the node_modules.
+  # I tried doing this step during prepare, but it breaks.
+  # The uploaded artifact creates copies of node_modules/.bin/* instead of symlinks.
+  # Even removing them, and running npm install again didn't seem to to restore functionality.
+  - task: Npm@1
+    displayName: "npm ci"
+    inputs:
+      command: "ci"
+      workingDir: "$(Pipeline.Workspace)/drop/"
+
+  # Add the required static variables used during compile for this environment
+  - script: |
+      echo Writing: $(Pipeline.Workspace)/drop/.env.local
+
+      {
+      echo 'REACT_APP_CLIENT_ID=${{ parameters.reactAppClientId }}'
+      echo 'REACT_APP_GRAPHQL_URL=${{ parameters.reactAppGraphQLUrl }}'
+      echo 'REACT_APP_BASE=${{ parameters.reactAppBase }}'
+      } >.env.local
+
+      cat .env.local
+    workingDirectory: "$(Pipeline.Workspace)/drop"
+    displayName: "Write .env.local file"
+
+  # I ship it
+  - task: Npm@1
+    inputs:
+      command: "custom"
+      workingDir: "$(Pipeline.Workspace)/drop/"
+      customCommand: "run-script build"
+    displayName: "npm build"

@@ -1,0 +1,24 @@
+steps:
+  # [error]No agent found in pool Azure Pipelines which satisfies the following demand: docker.
+  - task: DockerInstaller@0
+    displayName: "Install Docker 17.09.0-ce"
+  - task: HelmInstaller@0
+    displayName: "Install Helm latest"
+    inputs:
+      helmVersion: latest
+# For some reason this was never working. I don't understand it
+#  /usr/local/bin/npm -> /usr/local/lib/node_modules/npm/bin/npm-cli.js
+#  /usr/local/bin/npx -> /usr/local/lib/node_modules/npm/bin/npx-cli.js
+#  + npm@7.24.0
+#  added 70 packages from 27 contributors, removed 250 packages and updated 187 packages in 12.804s
+# But then in the npm task:
+#  /usr/local/bin/npm --version
+#  6.14.15
+#  /usr/local/bin/npm config list
+#  ; cli configs
+#  metrics-registry = "https://registry.npmjs.org/"
+#  scope = ""
+#  user-agent = "npm/6.14.15 node/v14.17.6 linux x64"
+#  - script: |
+#      sudo npm i -g npm@latest
+#    displayName: "npm i -g npm@latest"
