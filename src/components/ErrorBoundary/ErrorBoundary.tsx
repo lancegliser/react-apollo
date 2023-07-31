@@ -1,13 +1,14 @@
-import React, { ErrorInfo } from "react";
+import React, { ErrorInfo, ReactNode } from "react";
 import FallbackUI from "./components/FallbackUI/FallbackUI";
 
-export interface IErrorBoundaryProps {}
-
+export type ErrorBoundaryProps = {
+  children: ReactNode;
+};
 interface IState {
   error?: Error;
   errorInfo?: ErrorInfo;
 }
-export class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, IState> {
   state: IState = {
     error: undefined,
     errorInfo: undefined,

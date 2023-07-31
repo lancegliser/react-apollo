@@ -1,20 +1,7 @@
-import React, {
-  FormEventHandler,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { AppRouteHome } from "../../AppRoutes";
-import SelfContext from "../../contexts/SelfContext";
-import {
-  useSaveUserMutation,
-  useUserByIdLazyQuery,
-} from "../../generated/types";
 
-const Profile: React.FunctionComponent = () => {
-  const { self, error: selfError } = useContext(SelfContext);
-
+const Page: React.FunctionComponent = () => {
   // Pull the full user object from getUserById
   const [getUserById, getUserIdByQuery] = useUserByIdLazyQuery();
   // Keep the user query in sync with the self definition
@@ -124,4 +111,4 @@ const Profile: React.FunctionComponent = () => {
     </>
   );
 };
-export default Profile;
+export default Page;

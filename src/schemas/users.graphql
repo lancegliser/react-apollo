@@ -1,16 +1,29 @@
-query Self {
-  self {
-    id
-    displayName
+query UsersSearch(
+  $limit: Int
+  $offset: Int
+  $orderMethod: UsersSearchOrderMethod
+  $orderDirection: SortDirection
+) {
+  users {
+    search(
+      limit: $limit
+      offset: $offset
+      order: { method: $orderMethod, direction: $orderDirection }
+    ) {
+      limit
+      offset
+      total
+      items {
+        ...UserFields
+      }
+    }
   }
 }
 
 query UserById($id: ID!) {
   users {
     getById(id: $id) {
-      id
-      displayName
-      email
+      ...UserFields
     }
   }
 }
@@ -18,9 +31,15 @@ query UserById($id: ID!) {
 mutation SaveUser($user: UserInput!) {
   users {
     saveUser(user: $user) {
-      id
-      displayName
-      email
+      ...UserFields
     }
   }
+}
+
+fragment UserFields on User {
+  createdAt
+  displayName
+  email
+  id
+  isServiceAccount
 }

@@ -2,10 +2,10 @@ import React, { Suspense } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import PageLoading from "../../../PageLoading/PageLoading";
 import { AppRouteHome, AppRouteProfile } from "../../../../AppRoutes";
-import Home from "../../../Home/Home";
+import Page from "../../../Home/Page";
 import AppHeader from "../AppHeader/AppHeader";
 
-const Profile = React.lazy(() => import("../../../Profile/Profile"));
+const Profile = React.lazy(() => import("../../../Users/Page"));
 
 const AppRouter: React.FunctionComponent = () => (
   <Router>
@@ -13,7 +13,7 @@ const AppRouter: React.FunctionComponent = () => (
     <Suspense fallback={<PageLoading />}>
       <Switch>
         <Route path={AppRouteHome.path} exact>
-          <Home />
+          <Page />
         </Route>
         <Route path={AppRouteProfile.path} exact>
           <Profile />

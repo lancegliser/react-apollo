@@ -1,44 +1,111 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
+    };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: any;
-  /** The `Upload` scalar type represents a file upload. */
-  Upload: any;
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  JSON: { input: any; output: any };
+  Upload: { input: any; output: any };
 };
+
+/** A base definition authentication actors. Customized from the auth-api generated types. */
+export type AuthenticationIdentity = ICreated &
+  IDisplayImage &
+  IDisplayName &
+  IId &
+  IUpdated & {
+    __typename?: "AuthenticationIdentity";
+    /**
+     * True if the Identity is active. False if the User has been deactivated.
+     * Deactivated Users will not be able to login. Entities will always be active.
+     */
+    active: Scalars["Boolean"]["output"];
+    /** ISO date time string for the time this resource was created */
+    createdAt?: Maybe<Scalars["String"]["output"]>;
+    /** Unique identifier for users that created this resource */
+    createdBy?: Maybe<Scalars["String"]["output"]>;
+    /** A public url name safe to display in any HTML context */
+    displayImageUrl?: Maybe<Scalars["String"]["output"]>;
+    /** A preformatted name safe to display in any HTML context */
+    displayName: Scalars["String"]["output"];
+    /** Email address. Users will have emails, entities will not. */
+    email?: Maybe<Scalars["String"]["output"]>;
+    /** The primary id for this type. Typically a namespaced chain of methods, providers, and unique ids. */
+    id: Scalars["ID"]["output"];
+    /** The string will be in an IANA time zone format. https://www.iana.org/time-zones */
+    timezone?: Maybe<Scalars["String"]["output"]>;
+    /** ISO date time string for the time this resource was created */
+    updatedAt?: Maybe<Scalars["String"]["output"]>;
+    /** Unique identifier for users that created this resource */
+    updatedBy?: Maybe<Scalars["String"]["output"]>;
+  };
+
+export enum AuthenticationRole {
+  Anonymous = "Anonymous",
+  Authenticated = "Authenticated",
+}
 
 export type ICreated = {
   /** ISO date time string for the time this resource was created */
-  createdAt?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["String"]["output"]>;
   /** Unique identifier for users that created this resource */
-  createdBy?: Maybe<Scalars["ID"]>;
+  createdBy?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type IDisplayImage = {
+  /** A public url name safe to display in any HTML context */
+  displayImageUrl?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type IDisplayName = {
   /** A preformatted display name safe to display in HTML context */
-  displayName?: Maybe<Scalars["String"]>;
+  displayName?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type IId = {
+  /** The primary id for this type. Typically a namespaced chain of methods, providers, and unique ids. */
+  id: Scalars["ID"]["output"];
+};
+
+/** Provides the required attributes to support automatic .fetchMore() offset pagination merge strategies */
+export type IOffsetPaging = {
+  /** The number of records in this set */
+  limit: Scalars["Int"]["output"];
+  /** The index of the first item in this result set from the larger collection */
+  offset: Scalars["Int"]["output"];
+  /** The total number of records available in the larger collection */
+  total: Scalars["Int"]["output"];
 };
 
 export type IUpdated = {
   /** ISO date time string for the time this resource was created */
-  updatedAt?: Maybe<Scalars["String"]>;
+  updatedAt?: Maybe<Scalars["String"]["output"]>;
   /** Unique identifier for users that created this resource */
-  updatedBy?: Maybe<Scalars["ID"]>;
+  updatedBy?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type Mutation = {
@@ -49,41 +116,64 @@ export type Mutation = {
 
 export type Query = {
   __typename?: "Query";
-  /** Returns the current user as defined by the authentication headers */
-  self?: Maybe<User>;
+  /** A base definition authentication actors */
+  self?: Maybe<AuthenticationIdentity>;
+  system: System;
   /** Provides name spaced users functionality */
   users: UsersQuery;
 };
 
+export enum SortDirection {
+  Ascending = "Ascending",
+  Descending = "Descending",
+}
+
+export type System = {
+  __typename?: "System";
+  /** Returns configurations applicable to the application for the current environment */
+  config: SystemConfig;
+  /** Provides a list of environmental variables */
+  environment: Scalars["JSON"]["output"];
+};
+
+/** Provides environment user agnostic system configurations */
+export type SystemConfig = {
+  __typename?: "SystemConfig";
+  loginUrl: Scalars["String"]["output"];
+  logoutUrl: Scalars["String"]["output"];
+  /** The current time. A mock field likely to be replaced in application specific implementations. */
+  timestamp: Scalars["String"]["output"];
+};
+
 export type User = ICreated &
-  IUpdated &
-  IDisplayName & {
+  IDisplayName &
+  IUpdated & {
     __typename?: "User";
-    /** Unique identifier for the resource across all collections */
-    id?: Maybe<Scalars["ID"]>;
     /** ISO date time string for the time this resource was created */
-    createdAt?: Maybe<Scalars["String"]>;
+    createdAt?: Maybe<Scalars["String"]["output"]>;
     /** Unique identifier for users that created this resource */
-    createdBy?: Maybe<Scalars["ID"]>;
-    /** ISO date time string for the time this resource was created */
-    updatedAt?: Maybe<Scalars["String"]>;
-    /** Unique identifier for users that created this resource */
-    updatedBy?: Maybe<Scalars["ID"]>;
+    createdBy?: Maybe<Scalars["String"]["output"]>;
     /** A preformatted name safe to display in any HTML context */
-    displayName?: Maybe<Scalars["String"]>;
+    displayName?: Maybe<Scalars["String"]["output"]>;
     /** Email addresses */
-    email?: Maybe<Scalars["String"]>;
+    email?: Maybe<Scalars["String"]["output"]>;
+    /** Unique identifier for the resource across all collections */
+    id: Scalars["ID"]["output"];
     /** Determines if a users is a service account supporting applications */
-    isServiceAccount?: Maybe<Scalars["Boolean"]>;
+    isServiceAccount?: Maybe<Scalars["Boolean"]["output"]>;
+    /** ISO date time string for the time this resource was created */
+    updatedAt?: Maybe<Scalars["String"]["output"]>;
+    /** Unique identifier for users that created this resource */
+    updatedBy?: Maybe<Scalars["String"]["output"]>;
   };
 
 export type UserInput = {
-  /** Unique identifier for the resource across all collections */
-  id: Scalars["ID"];
   /** A preformatted name safe to display in any HTML context */
-  displayName?: Maybe<Scalars["String"]>;
+  displayName?: InputMaybe<Scalars["String"]["input"]>;
   /** Email addresses */
-  email?: Maybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  /** Unique identifier for the resource across all collections */
+  id: Scalars["ID"]["input"];
 };
 
 /** Provides name spaced users functionality */
@@ -103,38 +193,100 @@ export type UsersQuery = {
   __typename?: "UsersQuery";
   /** Returns the user record matching the provided id */
   getById?: Maybe<User>;
+  search: UsersSearchPagedResponse;
 };
 
 /** Provides name spaced users functionality */
 export type UsersQueryGetByIdArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
+};
+
+/** Provides name spaced users functionality */
+export type UsersQuerySearchArgs = {
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order?: InputMaybe<UsersSearchOrdering>;
+};
+
+export type UsersSearchOrdering = {
+  /** Default: Asc */
+  direction?: InputMaybe<SortDirection>;
+  /** One or more fields to be used in sort direction */
+  method?: InputMaybe<UsersSearchOrderMethod>;
+};
+
+export enum UsersSearchOrderMethod {
+  CreatedAt = "CreatedAt",
+  DisplayName = "DisplayName",
+  Id = "Id",
+}
+
+export type UsersSearchPagedResponse = IOffsetPaging & {
+  __typename?: "UsersSearchPagedResponse";
+  items: Array<User>;
+  /** The number of records in this set. Default: 50. */
+  limit: Scalars["Int"]["output"];
+  /** The index of the first item in this result set from the larger collection. Default: 0. */
+  offset: Scalars["Int"]["output"];
+  /** The total number of records available in the larger collection */
+  total: Scalars["Int"]["output"];
 };
 
 export type SelfQueryVariables = Exact<{ [key: string]: never }>;
 
 export type SelfQuery = {
   __typename?: "Query";
-  self?: Maybe<{
-    __typename?: "User";
-    id?: Maybe<string>;
-    displayName?: Maybe<string>;
-  }>;
+  self?: {
+    __typename?: "AuthenticationIdentity";
+    id: string;
+    displayName: string;
+  } | null;
+};
+
+export type UsersSearchQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  orderMethod?: InputMaybe<UsersSearchOrderMethod>;
+  orderDirection?: InputMaybe<SortDirection>;
+}>;
+
+export type UsersSearchQuery = {
+  __typename?: "Query";
+  users: {
+    __typename?: "UsersQuery";
+    search: {
+      __typename?: "UsersSearchPagedResponse";
+      limit: number;
+      offset: number;
+      total: number;
+      items: Array<{
+        __typename?: "User";
+        createdAt?: string | null;
+        displayName?: string | null;
+        email?: string | null;
+        id: string;
+        isServiceAccount?: boolean | null;
+      }>;
+    };
+  };
 };
 
 export type UserByIdQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type UserByIdQuery = {
   __typename?: "Query";
   users: {
     __typename?: "UsersQuery";
-    getById?: Maybe<{
+    getById?: {
       __typename?: "User";
-      id?: Maybe<string>;
-      displayName?: Maybe<string>;
-      email?: Maybe<string>;
-    }>;
+      createdAt?: string | null;
+      displayName?: string | null;
+      email?: string | null;
+      id: string;
+      isServiceAccount?: boolean | null;
+    } | null;
   };
 };
 
@@ -146,15 +298,35 @@ export type SaveUserMutation = {
   __typename?: "Mutation";
   users: {
     __typename?: "UsersMutations";
-    saveUser?: Maybe<{
+    saveUser?: {
       __typename?: "User";
-      id?: Maybe<string>;
-      displayName?: Maybe<string>;
-      email?: Maybe<string>;
-    }>;
+      createdAt?: string | null;
+      displayName?: string | null;
+      email?: string | null;
+      id: string;
+      isServiceAccount?: boolean | null;
+    } | null;
   };
 };
 
+export type UserFieldsFragment = {
+  __typename?: "User";
+  createdAt?: string | null;
+  displayName?: string | null;
+  email?: string | null;
+  id: string;
+  isServiceAccount?: boolean | null;
+};
+
+export const UserFieldsFragmentDoc = gql`
+  fragment UserFields on User {
+    createdAt
+    displayName
+    email
+    id
+    isServiceAccount
+  }
+`;
 export const SelfDocument = gql`
   query Self {
     self {
@@ -180,33 +352,108 @@ export const SelfDocument = gql`
  * });
  */
 export function useSelfQuery(
-  baseOptions?: Apollo.QueryHookOptions<SelfQuery, SelfQueryVariables>
+  baseOptions?: Apollo.QueryHookOptions<SelfQuery, SelfQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<SelfQuery, SelfQueryVariables>(SelfDocument, options);
 }
 export function useSelfLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<SelfQuery, SelfQueryVariables>
+  baseOptions?: Apollo.LazyQueryHookOptions<SelfQuery, SelfQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<SelfQuery, SelfQueryVariables>(
     SelfDocument,
-    options
+    options,
   );
 }
 export type SelfQueryHookResult = ReturnType<typeof useSelfQuery>;
 export type SelfLazyQueryHookResult = ReturnType<typeof useSelfLazyQuery>;
 export type SelfQueryResult = Apollo.QueryResult<SelfQuery, SelfQueryVariables>;
+export const UsersSearchDocument = gql`
+  query UsersSearch(
+    $limit: Int
+    $offset: Int
+    $orderMethod: UsersSearchOrderMethod
+    $orderDirection: SortDirection
+  ) {
+    users {
+      search(
+        limit: $limit
+        offset: $offset
+        order: { method: $orderMethod, direction: $orderDirection }
+      ) {
+        limit
+        offset
+        total
+        items {
+          ...UserFields
+        }
+      }
+    }
+  }
+  ${UserFieldsFragmentDoc}
+`;
+
+/**
+ * __useUsersSearchQuery__
+ *
+ * To run a query within a React component, call `useUsersSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersSearchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUsersSearchQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      orderMethod: // value for 'orderMethod'
+ *      orderDirection: // value for 'orderDirection'
+ *   },
+ * });
+ */
+export function useUsersSearchQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    UsersSearchQuery,
+    UsersSearchQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<UsersSearchQuery, UsersSearchQueryVariables>(
+    UsersSearchDocument,
+    options,
+  );
+}
+export function useUsersSearchLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    UsersSearchQuery,
+    UsersSearchQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<UsersSearchQuery, UsersSearchQueryVariables>(
+    UsersSearchDocument,
+    options,
+  );
+}
+export type UsersSearchQueryHookResult = ReturnType<typeof useUsersSearchQuery>;
+export type UsersSearchLazyQueryHookResult = ReturnType<
+  typeof useUsersSearchLazyQuery
+>;
+export type UsersSearchQueryResult = Apollo.QueryResult<
+  UsersSearchQuery,
+  UsersSearchQueryVariables
+>;
 export const UserByIdDocument = gql`
   query UserById($id: ID!) {
     users {
       getById(id: $id) {
-        id
-        displayName
-        email
+        ...UserFields
       }
     }
   }
+  ${UserFieldsFragmentDoc}
 `;
 
 /**
@@ -226,24 +473,24 @@ export const UserByIdDocument = gql`
  * });
  */
 export function useUserByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<UserByIdQuery, UserByIdQueryVariables>
+  baseOptions: Apollo.QueryHookOptions<UserByIdQuery, UserByIdQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<UserByIdQuery, UserByIdQueryVariables>(
     UserByIdDocument,
-    options
+    options,
   );
 }
 export function useUserByIdLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
     UserByIdQuery,
     UserByIdQueryVariables
-  >
+  >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<UserByIdQuery, UserByIdQueryVariables>(
     UserByIdDocument,
-    options
+    options,
   );
 }
 export type UserByIdQueryHookResult = ReturnType<typeof useUserByIdQuery>;
@@ -258,12 +505,11 @@ export const SaveUserDocument = gql`
   mutation SaveUser($user: UserInput!) {
     users {
       saveUser(user: $user) {
-        id
-        displayName
-        email
+        ...UserFields
       }
     }
   }
+  ${UserFieldsFragmentDoc}
 `;
 export type SaveUserMutationFn = Apollo.MutationFunction<
   SaveUserMutation,
@@ -291,12 +537,12 @@ export function useSaveUserMutation(
   baseOptions?: Apollo.MutationHookOptions<
     SaveUserMutation,
     SaveUserMutationVariables
-  >
+  >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<SaveUserMutation, SaveUserMutationVariables>(
     SaveUserDocument,
-    options
+    options,
   );
 }
 export type SaveUserMutationHookResult = ReturnType<typeof useSaveUserMutation>;

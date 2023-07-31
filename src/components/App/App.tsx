@@ -1,17 +1,22 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import "./App.css";
-import { Helmet } from "react-helmet-async";
-import AppRouter from "./components/AppRouter/AppRouter";
+import { useNavigation } from "react-router-dom";
 import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
+import PageLoading from "../PageLoading/PageLoading";
 
-export const App: React.FunctionComponent = () => (
-  <>
-    <Helmet>
-      <title>Sample app</title>
-    </Helmet>
-    <ErrorBoundary>
-      <AppRouter />
-    </ErrorBoundary>
-  </>
-);
+type AppProps = {
+  children: ReactNode;
+};
+const App: React.FunctionComponent<AppProps> = ({ children }) => {
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <ErrorBoundary>
+        {navigation.state === "loading" ? <PageLoading /> : children}
+      </ErrorBoundary>
+    </>
+  );
+};
+
 export default App;
