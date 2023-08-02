@@ -1,5 +1,4 @@
-import React, { ReactNode } from "react";
-import "./App.css";
+import { FunctionComponent, ReactNode } from "react";
 import { useNavigation } from "react-router-dom";
 import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
 import PageLoading from "../PageLoading/PageLoading";
@@ -7,7 +6,7 @@ import PageLoading from "../PageLoading/PageLoading";
 type AppProps = {
   children: ReactNode;
 };
-const App: React.FunctionComponent<AppProps> = ({ children }) => {
+const App: FunctionComponent<AppProps> = ({ children }) => {
   const navigation = useNavigation();
 
   return (
