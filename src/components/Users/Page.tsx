@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { routeUsersTitle } from "./Router";
 import { useUsersSearchLazyQuery } from "../../generated/types";
+import { getMetaTitle } from "../../utils/meta";
 
 const Page: React.FunctionComponent = () => {
   // Pull the full user object from getUserById
@@ -14,7 +15,7 @@ const Page: React.FunctionComponent = () => {
   return (
     <>
       <Helmet>
-        <title>{routeUsersTitle}</title>
+        <title>{getMetaTitle([routeUsersTitle])}</title>
       </Helmet>
       <main>
         <h1>Users</h1>

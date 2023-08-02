@@ -46,8 +46,29 @@ export const generateUsersSearchPath = (
   );
   const urlSearchParams = new URLSearchParams(filteredSearchParams);
 
-  return (
-    path + (urlSearchParams.size > 0 ? "?" + urlSearchParams.toString() : "")
+  const urlSearchParamsString = urlSearchParams.toString();
+  return path + (urlSearchParamsString ? "?" + urlSearchParamsString : "");
+};
+
+export const routeUserProfileTitle = "Profile";
+export const routeUserProfile: RouteObject = {
+  path: `:id`,
+  async lazy() {
+    const { default: Component } = await import("./Profile");
+    return {
+      Component,
+    };
+  },
+};
+export type RouteUserProfileParams = {
+  id: string;
+};
+export const generateUsersProfilePath = (
+  params: RouteUserProfileParams,
+): string => {
+  return generatePath(
+    [usersRouter.path, routeUserProfile.path].join("/"),
+    params,
   );
 };
 
