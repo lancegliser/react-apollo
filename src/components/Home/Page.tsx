@@ -4,12 +4,13 @@ import "./Home.css";
 import { Helmet } from "react-helmet-async";
 import { routeHomeTitle } from "./Router";
 import App from "../App/App";
+import { getMetaTitle } from "../../utils/meta";
 
 const Page: React.FunctionComponent = () => {
   return (
     <>
       <Helmet>
-        <title>{routeHomeTitle} - Vite + React + Apollo</title>
+        <title>{getMetaTitle([routeHomeTitle])}</title>
       </Helmet>
       <App>
         <main className="App-header">
