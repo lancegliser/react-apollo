@@ -3,14 +3,14 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "start": "vite --host 127.0.0.1 --port 20006",
+    "start": "vite --host 127.0.0.1 --port 3000",
     "build": "tsc --noEmit && vite build",
     "test": "react-scripts test",
     "graphql-codegen": "graphql-codegen --config codegen.yml -r dotenv/config",
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx src/ --color",
     "pre-commit": "lint-staged",
     "prepare": "husky install",
-    "serve": "vite preview --host 127.0.0.1 --port 20006"
+    "serve": "vite preview --host 127.0.0.1 --port 3000"
   },
   "browserslist": {
     "production": [
