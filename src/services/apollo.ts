@@ -6,8 +6,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-const url =
-  process.env.REACT_APP_GRAPHQL_URL || "http://localhost:5000/graphql";
+const url = import.meta.env.VITE_GRAPHQL_URL || "http://localhost:5000/graphql";
 
 // HTTP connection to the API
 const terminatingLink = createHttpLink({

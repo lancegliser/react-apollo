@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import "./App.css";
+import "./index.css";
 import { ApolloProvider } from "@apollo/client";
 import { HelmetProvider } from "react-helmet-async";
 import { apolloClient } from "./services/apollo";
