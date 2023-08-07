@@ -75,7 +75,7 @@ export const generateUsersProfilePath = (
 // Primary route
 export const usersRoutesTitle = "Users";
 export const usersRouter: RouteObject = {
-  path: `/Users`,
+  path: `/users`,
   element: <Outlet />,
-  children: [routeUsersSearch],
+  children: [routeUsersSearch, routeUserProfile],
 };
