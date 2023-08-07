@@ -5,6 +5,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { offsetLimitItemsPaginationPolicy } from "../utils/apollo";
 
 const url = import.meta.env.VITE_GRAPHQL_URL || "http://localhost:5000";
 
@@ -52,16 +53,14 @@ const cache = new InMemoryCache({
         users: { merge: true },
       },
     },
-    // Stub functionality to allow pagination merging through the hook result's .fetchMore().
-    // Imagine users(limit: 10, offset: 0, ...) { id, displayName }
-    // UsersQuery: {
-    //   fields: {
-    //     users: {
-    //       keyArgs: ["id"],
-    //       ...offsetLimitItemsPaginationPolicy(),
-    //     },
-    //   },
-    // },
+    UsersQuery: {
+      fields: {
+        search: {
+          keyArgs: false, // An example here could be something like 'tenant' for 'database'
+          ...offsetLimitItemsPaginationPolicy(),
+        },
+      },
+    },
   },
 });
 
