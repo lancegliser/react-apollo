@@ -1,6 +1,15 @@
 # React Example
 
-> Provides a working Create React App to expand and alter as a base for UI's
+> Provides a working React App integrated with a GraphQL server via Apollo client
+
+## Topics
+
+- Client configuration ✅
+- Codegen ✅
+- Immediate ✅ and lazy queries❌
+- Namespaces ✅
+- Pagination strategies: Independent ✅, field read ❌and merge ✅
+- Mutations: Optimistic behaviors ❌, cache updates ❌, refetching ❌
 
 ## Prerequisites
 
