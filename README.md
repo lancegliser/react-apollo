@@ -8,7 +8,7 @@
 - Codegen ✅
 - Immediate ✅ and lazy queries❌
 - Namespaces ✅
-- Pagination strategies: Independent ✅, field read ❌and merge ✅
+- Pagination strategies: Independent ✅, field ✅, read and merge ✅
 - Mutations: Optimistic behaviors ❌, cache updates ❌, refetching ❌
 
 ## Prerequisites

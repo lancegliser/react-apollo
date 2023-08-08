@@ -36,37 +36,37 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
       },
       // The read function is called once before there's results
       // Then again after every merge
-      // read: (existing, incoming) => {
-      //   if (!existing) {
-      //     console.info("Read: No existing");
-      //     return undefined;
-      //   }
-      //   console.info("read", {
-      //     existing,
-      //     incomingArgs: incoming.args,
-      //   });
-      //
-      //   const offset: number =
-      //     typeof incoming.args?.offset === "number" ? incoming.args.offset : 0;
-      //   const limit: number =
-      //     typeof incoming.args?.limit === "number"
-      //       ? incoming.args.limit
-      //       : existing.limit;
-      //
-      //   const items = existing.items?.slice(offset, limit + offset) || [];
-      //   if (!items.length) {
-      //     console.info("items not in cache, returning undefined");
-      //     return undefined;
-      //   }
-      //
-      //   console.info("read items", items);
-      //   return {
-      //     ...existing,
-      //     offset,
-      //     limit,
-      //     items,
-      //   };
-      // },
+      read: (existing, incoming) => {
+        if (!existing) {
+          console.info("Read: No existing");
+          return undefined;
+        }
+        console.info("read", {
+          existing,
+          incomingArgs: incoming.args,
+        });
+
+        const offset: number =
+          typeof incoming.args?.offset === "number" ? incoming.args.offset : 0;
+        const limit: number =
+          typeof incoming.args?.limit === "number"
+            ? incoming.args.limit
+            : existing.limit;
+
+        const items = existing.items?.slice(offset, limit + offset) || [];
+        if (!items.length) {
+          console.info("items not in cache, returning undefined");
+          return undefined;
+        }
+
+        console.info("read items", items);
+        return {
+          ...existing,
+          offset,
+          limit,
+          items,
+        };
+      },
     };
   };
 
