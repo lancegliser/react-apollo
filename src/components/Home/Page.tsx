@@ -5,6 +5,8 @@ import { Helmet } from "react-helmet-async";
 import { routeHomeTitle } from "./Router";
 import App from "../App/App";
 import { getMetaTitle } from "../../utils/meta";
+import { generateUsersSearchPath } from "../Users/Router";
+import { Link } from "react-router-dom";
 
 const Page: React.FunctionComponent = () => {
   return (
@@ -19,17 +21,14 @@ const Page: React.FunctionComponent = () => {
             Edit <code>src/App.tsx</code> and save to reload.
           </p>
 
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          <Link className="App-link" to={usersPath}>
+            Learn React and Apollo client
+          </Link>
         </main>
       </App>
     </>
   );
 };
 export default Page;
+
+const usersPath = generateUsersSearchPath();
