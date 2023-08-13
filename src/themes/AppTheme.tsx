@@ -1,15 +1,18 @@
-import React, { useContext } from "react";
+import React, { FunctionComponent, ReactNode, useContext } from "react";
 import "./AppTheme.css";
 import ThemeContext from "../contexts/ThemeContext";
 
-const AppTheme: React.FunctionComponent = (props) => {
+type AppThemeProps = {
+  children: ReactNode;
+};
+const AppTheme: FunctionComponent<AppThemeProps> = (props) => {
   const themeContext = useContext(ThemeContext);
 
   const classes = ["AppTheme"];
   classes.push(
     themeContext.isColorSchemeLight
       ? "AppTheme--colorSchemeLight"
-      : "AppTheme--colorSchemeDark"
+      : "AppTheme--colorSchemeDark",
   );
 
   return (

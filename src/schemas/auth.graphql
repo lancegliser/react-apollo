@@ -1,0 +1,6 @@
+query Self {
+  self {
+    id
+    displayName
+  }
+}

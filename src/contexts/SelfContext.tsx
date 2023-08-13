@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { SelfQuery, SelfQueryResult, useSelfQuery } from "../generated/types";
 
 export interface ISelfContext {
@@ -10,7 +10,7 @@ export interface ISelfContext {
 export const SelfDefaults: ISelfContext = {
   self: {
     displayName: "Guest",
-    id: undefined,
+    id: "",
   },
   isLoading: false,
   error: undefined,
@@ -20,7 +20,9 @@ const SelfContext = React.createContext<ISelfContext>(SelfDefaults);
 SelfContext.displayName = "SelfContext";
 export default SelfContext;
 
-export interface ProviderProps {}
+export interface ProviderProps {
+  children: ReactNode;
+}
 export const Provider: React.FunctionComponent<ProviderProps> = (props) => {
   const selfQuery = useSelfQuery();
 

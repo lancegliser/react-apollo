@@ -17,7 +17,7 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
     return {
       // The merge function is run as new result is returned
       merge: (existing, incoming, { args }) => {
-        const mergedItems: any[] = [];
+        const mergedItems: any[] = existing?.items.slice() || [];
 
         // Assume an offset of 0 if args.offset omitted.
         const { offset = 0 } = args || {};
@@ -25,8 +25,11 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
           mergedItems[offset + index] = incoming.items[index];
         });
 
+        // console.info("merge", incoming, {
+        //   ...incoming,
+        //   items: mergedItems,
+        // });
         return {
-          ...existing,
           ...incoming,
           items: mergedItems,
         };
@@ -35,17 +38,33 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
       // Then again after every merge
       read: (existing, incoming) => {
         if (!existing) {
-          return;
+          // console.info("Read: No existing");
+          return undefined;
+        }
+        // console.info("read", {
+        //   existing,
+        //   incomingArgs: incoming.args,
+        // });
+
+        const offset: number =
+          typeof incoming.args?.offset === "number" ? incoming.args.offset : 0;
+        const limit: number =
+          typeof incoming.args?.limit === "number"
+            ? incoming.args.limit
+            : existing.limit;
+
+        const items = existing.items?.slice(offset, limit + offset) || [];
+        if (!items.length) {
+          // console.info("items not in cache, returning undefined");
+          return undefined;
         }
 
-        const { args } = incoming;
-        const offset: number = args?.offset || existing.offset || 0;
-        const limit: number =
-          args?.limit || existing.offset || existing.items?.length;
-
+        // console.info("read items", items);
         return {
           ...existing,
-          items: existing.items?.slice(offset, limit + offset) ?? [],
+          offset,
+          limit,
+          items,
         };
       },
     };
@@ -88,6 +107,8 @@ export const offsetLimitItemsLoadMorePolicy: OffsetLimitPaginationItemsPolicy =
 
         return {
           ...existing,
+          limit,
+          offset,
           items: existing.items?.slice(0, limit + offset) ?? [],
         };
       },

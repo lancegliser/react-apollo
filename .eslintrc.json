@@ -1,0 +1,18 @@
+{
+  "extends": ["react-app", "react-app/jest"],
+  "rules": {
+    "complexity": ["error", { "max": 15 }],
+    "import/no-anonymous-default-export": "off",
+    "prefer-const": "error",
+    "complexity": ["error", { "max": 15 }]
+  },
+
+  "overrides": [
+    {
+      "files": ["**/*.stories.*"],
+      "rules": {
+        "import/no-anonymous-default-export": "off"
+      }
+    }
+  ]
+}
