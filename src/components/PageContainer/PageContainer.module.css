@@ -1,0 +1,14 @@
+.root {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+@media (min-width: 1200px) {
+  .root {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

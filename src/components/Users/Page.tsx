@@ -1,7 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { FormEventHandler, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { generateUsersProfilePath, routeUsersTitle } from "./Router";
-import { useUsersSearchQuery } from "../../generated/types";
+import {
+  useSaveUserMutation,
+  useUsersSearchQuery,
+} from "../../generated/types";
 import { getMetaTitle } from "../../utils/meta";
 import { Link } from "react-router-dom";
 
@@ -82,6 +85,26 @@ const Page: React.FunctionComponent = () => {
   const pages = Math.floor(total / limit);
 
   // Add functionality
+  const [saveUser, saveUserMutation] = useSaveUserMutation();
+  const [displayName, setDisplayName] = useState("");
+
+  const onSaveUser: FormEventHandler = async (event) => {
+    event.preventDefault();
+    const newId = new Date().getTime().toString();
+
+    await saveUser({
+      variables: {
+        user: {
+          displayName,
+          id: newId,
+        },
+      },
+    });
+
+    // Apollo will figure out to update the User with matching ID properties.
+    // If it didn't, you could try:
+    // await userQuery.refetch()
+  };
 
   return (
     <>
@@ -89,22 +112,22 @@ const Page: React.FunctionComponent = () => {
         <title>{getMetaTitle([routeUsersTitle])}</title>
       </Helmet>
       <main>
-        <h1>Users</h1>
-        {usersSearchQuery.error && <p>{usersSearchQuery.error?.message}</p>}
-        {usersSearchQuery.loading ? (
-          <p>"Loading...."</p>
-        ) : (items.length || 0) > 0 ? (
-          items.map((user) => (
-            <p key={user.id}>
-              <Link to={generateUsersProfilePath({ id: user.id })}>
-                {user.displayName}
-              </Link>
-            </p>
-          ))
-        ) : (
-          <p>No users</p>
-        )}
         <section>
+          <h1>Users</h1>
+          {usersSearchQuery.error && <p>{usersSearchQuery.error?.message}</p>}
+          {usersSearchQuery.loading ? (
+            <p>"Loading...."</p>
+          ) : (items.length || 0) > 0 ? (
+            items.map((user) => (
+              <p key={user.id}>
+                <Link to={generateUsersProfilePath({ id: user.id })}>
+                  {user.displayName}
+                </Link>
+              </p>
+            ))
+          ) : (
+            <p>No users</p>
+          )}
           <p>
             {offset}-{offset + limit} of {total}
             <br />
@@ -127,6 +150,48 @@ const Page: React.FunctionComponent = () => {
               Reset
             </button>
           </p>
+        </section>
+
+        <section>
+          <h1>New user</h1>
+          <form onSubmit={onSaveUser}>
+            <label>
+              <p>Display name:</p>
+              <input
+                placeholder={"Display name"}
+                required
+                value={displayName}
+                onChange={(event) => {
+                  setDisplayName(event.target.value);
+                }}
+              />
+            </label>
+            <input
+              type={"submit"}
+              value={saveUserMutation.loading ? "Saving" : "Save"}
+              disabled={saveUserMutation.loading}
+            />
+          </form>
+          {saveUserMutation.data && (
+            <>
+              <p>Updated data:</p>
+              <code>
+                <pre>
+                  {JSON.stringify(
+                    saveUserMutation.data.users.saveUser,
+                    null,
+                    2,
+                  )}
+                </pre>
+              </code>
+            </>
+          )}
+          {saveUserMutation.error && (
+            <p>
+              Oh no! Could not save user:
+              <br /> {saveUserMutation.error.message}
+            </p>
+          )}
         </section>
       </main>
     </>

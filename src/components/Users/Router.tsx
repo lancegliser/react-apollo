@@ -1,5 +1,6 @@
 import React from "react";
 import { generatePath, Outlet, RouteObject } from "react-router-dom";
+import PageContainer from "../PageContainer/PageContainer";
 
 export const routeUsersTitle = "Users";
 export const routeUsersSearch: RouteObject = {
@@ -76,6 +77,10 @@ export const generateUsersProfilePath = (
 export const usersRoutesTitle = "Users";
 export const usersRouter: RouteObject = {
   path: `/users`,
-  element: <Outlet />,
+  element: (
+    <PageContainer>
+      <Outlet />
+    </PageContainer>
+  ),
   children: [routeUsersSearch, routeUserProfile],
 };
