@@ -17,7 +17,7 @@ export type RouteUsersSearchQueryParams = {
   page?: number;
 };
 export const generateUsersSearchPath = (
-  params: RouteUsersSearchParams,
+  params: RouteUsersSearchParams = {},
   searchParams: RouteUsersSearchQueryParams = {},
 ): string => {
   const path = generatePath(
