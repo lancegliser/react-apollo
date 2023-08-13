@@ -2,6 +2,8 @@ import React, { FormEventHandler, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { generateUsersProfilePath, routeUsersTitle } from "./Router";
 import {
+  User,
+  UserInput,
   useSaveUserMutation,
   useUsersSearchQuery,
 } from "../../generated/types";
@@ -82,28 +84,92 @@ const Page: React.FunctionComponent = () => {
 
   // Shared functionality
   const total = usersSearchQuery.data?.users.search.total || 0;
-  const pages = Math.floor(total / limit);
+  const pages = Math.ceil(total / limit);
 
   // Add functionality
   const [saveUser, saveUserMutation] = useSaveUserMutation();
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState("Lance Gliser");
+  const [email, setEmail] = useState("lance.gliser@gmail.com");
 
   const onSaveUser: FormEventHandler = async (event) => {
     event.preventDefault();
-    const newId = new Date().getTime().toString();
+    const now = new Date();
 
+    const user: UserInput = {
+      displayName,
+      email,
+      id: now.getTime().toString(),
+    };
     await saveUser({
-      variables: {
-        user: {
-          displayName,
-          id: newId,
-        },
-      },
-    });
+      variables: { user },
+      // We've got our new user, and Apollo has cached the properties by id just by the return value.
+      // ☣️But we're not finished! The userSearchQuery has to be informed of the new content! ☣️
+      // Lists of objects are never dynamically added to. Our options are:
+      // https://www.apollographql.com/docs/react/data/refetching/
+      // https://www.apollographql.com/docs/react/data/mutations#updating-the-cache-directly
 
-    // Apollo will figure out to update the User with matching ID properties.
-    // If it didn't, you could try:
-    // await userQuery.refetch()
+      // Easiest ✅: just refetch associated queries to get new data!
+      // Fires *after* cache update, similar to the behavior you'd get from result = await ();
+      // onCompleted: () => {
+      // usersSearchQuery.refetch();
+      // setOffset(0);
+      // },
+      // More complicated ☣️: Patch the results in the cache directly
+      update: (cache, result) => {
+        cache.modify({
+          fields: {
+            users: (existing) => {
+              // {
+              //     "__typename": "UsersQuery",
+              //     "search": {
+              //         "__typename": "UsersSearchPagedResponse",
+              //         "limit": 2,
+              //         "offset": 0,
+              //         "total": 4,
+              //         "items": [
+              //             {
+              //                 "__ref": "User:1234"
+              //             },
+              //             {
+              //                 "__ref": "User:cuba-access"
+              //             }
+              //         ]
+              //     }
+              // }
+              const newTotal = existing.search.total + 1;
+              const newOffset = Math.ceil(newTotal / limit);
+              setOffset(newOffset);
+              return {
+                ...existing,
+                search: {
+                  ...existing.search,
+                  total: newTotal,
+                  // Let's push the user to the last page so the new user will show
+                  offset: newOffset,
+                  items: [
+                    ...existing.search.items,
+                    result.data?.users.saveUser,
+                  ],
+                },
+              };
+            },
+          },
+        });
+      },
+      // Want to get super fancy? 😎
+      // Provide a result that will update the cache with 'expected data' UI without
+      // waiting for the response
+      optimisticResponse: () => ({
+        users: {
+          saveUser: {
+            __typename: "User",
+            createdAt: now.toISOString(),
+            isServiceAccount: false,
+            ...user,
+          },
+        },
+      }),
+    });
   };
 
   return (
@@ -129,7 +195,7 @@ const Page: React.FunctionComponent = () => {
             <p>No users</p>
           )}
           <p>
-            {offset}-{offset + limit} of {total}
+            {offset + 1}-{offset + limit} of {total}
             <br />
             {new Array(pages).fill(0).map((_, index) => (
               <button
@@ -155,26 +221,48 @@ const Page: React.FunctionComponent = () => {
         <section>
           <h1>New user</h1>
           <form onSubmit={onSaveUser}>
-            <label>
-              <p>Display name:</p>
-              <input
-                placeholder={"Display name"}
-                required
-                value={displayName}
-                onChange={(event) => {
-                  setDisplayName(event.target.value);
-                }}
-              />
-            </label>
-            <input
-              type={"submit"}
-              value={saveUserMutation.loading ? "Saving" : "Save"}
-              disabled={saveUserMutation.loading}
-            />
+            <div>
+              <label>
+                Display name:
+                <br />
+                <input
+                  placeholder={"Display name"}
+                  required
+                  value={displayName}
+                  onChange={(event) => {
+                    setDisplayName(event.target.value);
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Email:
+                <br />
+                <input
+                  type={"email"}
+                  placeholder={"email"}
+                  required
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <button
+                type={"submit"}
+                value={saveUserMutation.loading ? "Saving" : "Save"}
+                disabled={saveUserMutation.loading}
+              >
+                Submit
+              </button>
+            </div>
           </form>
           {saveUserMutation.data && (
             <>
-              <p>Updated data:</p>
+              <p>Added user:</p>
               <code>
                 <pre>
                   {JSON.stringify(

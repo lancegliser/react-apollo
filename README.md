@@ -9,7 +9,7 @@
 - Immediate ✅ and lazy queries ✅
 - Namespaces ✅
 - Pagination strategies: Independent ✅, field ✅, read and merge ✅
-- Mutations: Basics ✅, Optimistic behaviors ❌, cache updates ❌, refetching ❌
+- Mutations: Basics ✅, Optimistic behaviors ✅, cache updates ✅, refetching ✅
 
 ## Prerequisites
 

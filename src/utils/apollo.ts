@@ -25,10 +25,10 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
           mergedItems[offset + index] = incoming.items[index];
         });
 
-        console.info("merge", incoming, {
-          ...incoming,
-          items: mergedItems,
-        });
+        // console.info("merge", incoming, {
+        //   ...incoming,
+        //   items: mergedItems,
+        // });
         return {
           ...incoming,
           items: mergedItems,
@@ -38,13 +38,13 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
       // Then again after every merge
       read: (existing, incoming) => {
         if (!existing) {
-          console.info("Read: No existing");
+          // console.info("Read: No existing");
           return undefined;
         }
-        console.info("read", {
-          existing,
-          incomingArgs: incoming.args,
-        });
+        // console.info("read", {
+        //   existing,
+        //   incomingArgs: incoming.args,
+        // });
 
         const offset: number =
           typeof incoming.args?.offset === "number" ? incoming.args.offset : 0;
@@ -55,11 +55,11 @@ export const offsetLimitItemsPaginationPolicy: OffsetLimitPaginationItemsPolicy 
 
         const items = existing.items?.slice(offset, limit + offset) || [];
         if (!items.length) {
-          console.info("items not in cache, returning undefined");
+          // console.info("items not in cache, returning undefined");
           return undefined;
         }
 
-        console.info("read items", items);
+        // console.info("read items", items);
         return {
           ...existing,
           offset,
