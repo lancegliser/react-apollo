@@ -8,7 +8,9 @@ import { Link } from "react-router-dom";
 const limit = 2;
 const offsetDefault = 0;
 const Page: React.FunctionComponent = () => {
+  // Listing functionality
   const [offset, setOffset] = useState(offsetDefault);
+
   // The obvious solution, just change the args and get new data! ❌
   // useEffect(() => {
   //   searchUsers({ variables: { offset, limit } });
@@ -63,7 +65,6 @@ const Page: React.FunctionComponent = () => {
   // https://www.apollographql.com/docs/react/pagination/core-api/
   const usersSearchQuery = useUsersSearchQuery({
     notifyOnNetworkStatusChange: true, // Yes please!
-    // Do not include any variable that will change, you will get a new query
     variables: { limit, offset },
   });
   // ☣️Our query relies on both merge, and read functions, we're not finished! ☣️
@@ -79,6 +80,8 @@ const Page: React.FunctionComponent = () => {
   // Shared functionality
   const total = usersSearchQuery.data?.users.search.total || 0;
   const pages = Math.floor(total / limit);
+
+  // Add functionality
 
   return (
     <>
@@ -115,8 +118,15 @@ const Page: React.FunctionComponent = () => {
                 {index + 1}
               </button>
             ))}
+            <button
+              onClick={() => {
+                setOffset(0);
+                usersSearchQuery.refetch();
+              }}
+            >
+              Reset
+            </button>
           </p>
-          <p></p>
         </section>
       </main>
     </>
