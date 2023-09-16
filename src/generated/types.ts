@@ -161,6 +161,7 @@ export type User = ICreated &
     id: Scalars["ID"]["output"];
     /** Determines if a users is a service account supporting applications */
     isServiceAccount?: Maybe<Scalars["Boolean"]["output"]>;
+    nickname?: Maybe<Scalars["String"]["output"]>;
     /** ISO date time string for the time this resource was created */
     updatedAt?: Maybe<Scalars["String"]["output"]>;
     /** Unique identifier for users that created this resource */

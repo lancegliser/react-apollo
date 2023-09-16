@@ -215,6 +215,7 @@ type User implements ICreated & IDisplayName & IUpdated {
   Determines if a users is a service account supporting applications
   """
   isServiceAccount: Boolean
+  nickname: String
 
   """
   ISO date time string for the time this resource was created
