@@ -2,6 +2,12 @@
 
 > Provides a working React App integrated with a GraphQL server via Apollo client
 
+## Upstream v1.2.0
+
+```bash
+git remote add upstream git@github.com:lancegliser/react-apollo.git
+```
+
 ## Topics
 
 - Client configuration ✅
